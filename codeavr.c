@@ -132,7 +132,9 @@ gpush ()
 
 gpop ()
 {
-    assert(0);
+    gPushCount--;
+    ol ("pop\tr26");
+    stkp = stkp + INTSIZE;
 }
 
 swapstk ()
@@ -150,9 +152,9 @@ char* sname;
 
 gret()
 {
-    while(gPushCount--)
+    while(gPushCount)
     {
-        ol ("pop r0");
+        gpop();
     }
     ol("ret");
     nl();
@@ -217,7 +219,13 @@ gjcase()
 gadd (lval, lval2)
 int *lval, *lval2;
 {
-    assert(0);
+    if(dbltest (lval2, lval))
+    {
+        assert(0);
+    }
+    gpop();
+    ol("add\tr30, r26");
+    stkp = stkp + INTSIZE;
 }
 
 gsub ()
