@@ -3,6 +3,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include "defs.h"
 #include "data.h"
@@ -22,9 +23,8 @@ int     *lval;
         }
         if (amatch("sizeof", 6)) {
                 needbrack("(");
-                immed();
-                if (amatch("int", 3)) onum(intsize());
-                else if (amatch("char", 4)) onum(1);
+                if (amatch("int", 3)) immed(intsize());
+                else if (amatch("char", 4)) immed(1);
                 else if (symname(sname)) {
                         if ((ptr = findloc(sname)) ||
                                 (ptr = findglb(sname))) {
@@ -34,10 +34,10 @@ int     *lval;
                                 if ((ptr[TYPE] == CINT) ||
                                         (ptr[IDENT] == POINTER))
                                         k *= intsize();
-                                onum(k);
+                                immed(k);
                         } else {
                                 error("sizeof undeclared variable");
-                                onum(0);
+                                immed(0);
                         }
                 } else {
                         error("sizeof only on type or variable");
@@ -72,7 +72,8 @@ int     *lval;
                                                 lval[2] = ptr[TYPE];
                                         return (1);
                                 }
-                                immed ();
+                                assert(0);
+                                immed(0);
                                 prefix ();
                                 outstr (ptr);
                                 nl ();
@@ -92,8 +93,7 @@ int     *lval;
                 return (lval[0] = lval[1] = 0);
         else {
                 error ("invalid expression");
-                immed ();
-                onum (0);
+                immed (0);
                 nl ();
                 junk ();
                 return (0);
@@ -138,16 +138,16 @@ constant (val)
 int     val[];
 {
         if (number (val))
-                immed ();
+                immed (val[0]);
         else if (pstr (val))
-                immed ();
+                immed (val[0]);
         else if (qstr (val)) {
-                immed ();
+                assert(0);
+                immed (0);
                 printlabel (litlab);
                 outbyte ('+');
         } else
                 return (0);
-        onum (val[0]);
         nl ();
         return (1);
 

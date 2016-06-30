@@ -76,18 +76,19 @@ char *sym;
 getloc (sym)
 char    *sym;
 {
-    immed ();
     if (sym[STORAGE] == LSTATIC)
     {
+        assert(0);
+        immed(0);
         printlabel(glint(sym));
         nl();
-        assert(0);
     }
     else
     {
-        outdec(glint(sym) - stkp);
+        immed (glint(sym) - stkp);
         nl();
         ol("ld\tr30, Y");
+        ol("ld\tr31, -Y");
         nl();
     }
 }
@@ -103,6 +104,7 @@ char    typeobj;
 {
     ol("in\tr28, 0x3d");
     ol("in\tr29, 0x3e");
+    ol("st\tY+, r31");
     ol("st\tY, r30");
     nl();
 }
@@ -118,20 +120,29 @@ swap ()
     assert(0);
 }
 
-immed ()
+immed (addr)
+int addr;
 {
     ot("ldi\tr30, ");
+    onum(addr & 0xFF);
+    nl();
+    ot("ldi\tr31, ");
+    onum((addr >> 8) & 0xFF);
 }
 
 gpush ()
 {
     ol("push\tr30");
     gPushCount++;
+    ol("push\tr31");
+    gPushCount++;
     nl();
 }
 
 gpop ()
 {
+    gPushCount--;
+    ol ("pop\tr27");
     gPushCount--;
     ol ("pop\tr26");
     stkp = stkp + INTSIZE;
@@ -225,6 +236,7 @@ int *lval, *lval2;
     }
     gpop();
     ol("add\tr30, r26");
+    ol("adc\tr31, r27");
     stkp = stkp + INTSIZE;
 }
 

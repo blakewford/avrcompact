@@ -3,6 +3,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include "defs.h"
 #include "data.h"
@@ -532,7 +533,8 @@ int     lval[];
                 if (lval[1])
                         return (0);
                 /* global and non-array */
-                immed ();
+                assert(0);
+                immed (0);
                 prefix ();
                 outstr (ptr = lval[0]);
                 nl ();
@@ -617,7 +619,8 @@ int     *lval;
         if (ptr == 0)
                 return (k);
         if (ptr[IDENT] == FUNCTION) {
-                immed ();
+                assert(0);
+                immed (0);
                 prefix ();
                 outstr (ptr);
                 nl ();

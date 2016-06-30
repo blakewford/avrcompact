@@ -3,6 +3,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include "defs.h"
 #include "data.h"
@@ -303,7 +304,8 @@ doswitch ()
         ws[WSTAB] = getlabel ();
         ws[WSDEF] = ws[WSEXIT] = getlabel ();
         addwhile (ws);
-        immed ();
+        assert(0);
+        immed (0);
         printlabel (ws[WSTAB]);
         nl ();
         gpush ();
