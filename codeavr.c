@@ -307,13 +307,13 @@ gbool ()
 
 ginc (lval) int lval[];
 {
-    assert(0);
+    ol("adiw\tr30, 1");
 }
 
 
 gdec (lval) int lval[];
 {
-    assert(0);
+    ol("sbiw\tr30, 1");
 }
 
 geq ()
