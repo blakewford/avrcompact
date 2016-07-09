@@ -6,8 +6,6 @@
 #define INTSIZE 2
 #define BYTEOFF 0
 
-int gPushCount = 0;
-
 header()
 {
     outstr(";\tSmall C AVR\n;");
@@ -85,10 +83,7 @@ char    *sym;
     }
     else
     {
-        immed (glint(sym) - stkp);
-        nl();
-        ol("ld\tr30, Y");
-        ol("ld\tr31, -Y");
+        immed (glint(sym));
         nl();
     }
 }
@@ -104,15 +99,21 @@ char    typeobj;
 {
     ol("in\tr28, 0x3d");
     ol("in\tr29, 0x3e");
-    ol("st\tY+, r31");
-    ol("st\tY, r30");
+    ol("adiw\tr28, 1");
+    ol("ld\tr27, Y+");
+    ol("ld\t26, Y");
+    ol("st\tX, r31");
+    ol("st\t-X, r30");
     nl();
 }
 
 indirect (typeobj)
 char    typeobj;
 {
-    assert(0);
+    ol("ld\tr27, Z");
+    ol("ld\tr26, -Z");
+    ol("movw\tr30, r26");
+    nl();
 }
 
 swap ()
@@ -133,18 +134,18 @@ int addr;
 gpush ()
 {
     ol("push\tr30");
-    gPushCount++;
     ol("push\tr31");
-    gPushCount++;
     nl();
+
+    stkp = stkp - INTSIZE*2;
 }
 
 gpop ()
 {
-    gPushCount--;
     ol ("pop\tr27");
-    gPushCount--;
     ol ("pop\tr26");
+    nl();
+
     stkp = stkp + INTSIZE;
 }
 
@@ -163,10 +164,6 @@ char* sname;
 
 gret()
 {
-    while(gPushCount)
-    {
-        gpop();
-    }
     ol("ret");
     nl();
 }
@@ -209,7 +206,17 @@ defword ()
 modstk(newstkp)
 int newstkp;
 {
-    return 0;
+    ot("ldi\tr16, ");
+    onum(newstkp & 0xFF);
+    nl();
+    ol("out\t0x3d, r16");
+    ot("ldi\tr17, ");
+    onum((newstkp >> 8) & 0xFF);
+    nl();
+    ol("out\t0x3e, r17");
+    nl();
+
+    return newstkp;
 }
 
 gaslint()

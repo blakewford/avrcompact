@@ -64,7 +64,7 @@ newfunc ()
                 if (endst ())
                         break;
         }
-        stkp = 0;
+        stkp = 0xAFF;
         argtop = argstk;
         while (argstk) {
                 if (amatch ("register", 8)) {
@@ -90,9 +90,9 @@ newfunc ()
         printlabel(fexitlab);
         col();
         nl();
-        modstk (0);
+        modstk (0xAFD);
         gret ();
-        stkp = 0;
+        stkp = 0xAFD;
         locptr = STARTLOC;
 
 }
